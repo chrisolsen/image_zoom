@@ -1,13 +1,20 @@
 /**
- * image zoom:
- *    Displays the linked image by floating it above the page
+ * ImageZoom
+ * Summary:
+ *   Simple image viewer without all the fluff.
+ * Created By:
+ *    Chris Olsen
  */
 
 (function($) {
   var NextPrevDisplayTimeoutId
-
+  var Images = []
+  
   $.fn.gsImageZoom = function() {
     return this.each(function() {
+      // save a list of the images allowing for the zoom 
+      Images[Images.length] = this
+      
       $(this).click(function() {
         var currentImageIndex = find_current_index_for_image(this)
         load_image(currentImageIndex)
@@ -25,8 +32,8 @@
    */
   function find_current_index_for_image(link) {
     var foundIndex = -1
-    $(".image-zoom").each(function(index) {
-      if (this.href == link.href)
+    $.each(Images, function(index) {
+      if (Images[index].href == link.href)
         foundIndex = index
     })
     return foundIndex;
@@ -34,10 +41,10 @@
 
   /**
    * Retrieves the url for the link of the index passed in 
-   * based on the array of links of the .image-zoom class
+   * based on the array of links within the selector 
    */
   function find_url_for_image_by_index(index) {
-    return $(".image-zoom")[index].href
+    return Images[index].href
   }
 
   /**
@@ -121,7 +128,7 @@
     // determine the index of the link clicked to allow us
     // to know whether to show/hide the previous or next link
     var showPrevious = imageIndex != 0
-    var showNext = imageIndex != ($("a.image-zoom").length - 1)
+    var showNext = imageIndex != (Images.length - 1)
 
     
     // bind the previous and next links if they are to be shown
