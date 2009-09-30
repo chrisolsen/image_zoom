@@ -133,7 +133,7 @@
     
     // bind the previous and next links if they are to be shown
     if (showPrevious) {
-      var previousLink = $("<a id='gs-image-zoom-previous'>Previous</a>")
+      var previousLink = $("<a id='gs-image-zoom-previous'>Prev</a>")
       previousLink.click(function() {
         load_image(imageIndex - 1)
         return false
