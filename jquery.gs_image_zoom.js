@@ -8,12 +8,12 @@
 
 (function($) {
   var NextPrevDisplayTimeoutId
-  var Images = []
+  var ImageLinks = []
   
   $.fn.gsImageZoom = function() {
     return this.each(function() {
       // save a list of the images allowing for the zoom 
-      Images[Images.length] = this
+      ImageLinks[ImageLinks.length] = this
       
       $(this).click(function() {
         var currentImageIndex = find_current_index_for_image(this)
@@ -32,8 +32,8 @@
    */
   function find_current_index_for_image(link) {
     var foundIndex = -1
-    $.each(Images, function(index) {
-      if (Images[index].href == link.href)
+    $.each(ImageLinks, function(index) {
+      if (ImageLinks[index].href == link.href)
         foundIndex = index
     })
     return foundIndex;
@@ -44,7 +44,7 @@
    * based on the array of links within the selector 
    */
   function find_url_for_image_by_index(index) {
-    return Images[index].href
+    return ImageLinks[index].href
   }
 
   /**
@@ -74,9 +74,9 @@
       topOffset = ($(window).height() - imgHeight) / 2
     
       // remove any previous animations
-      var previousImages = $(".gs-image")
-      if (previousImages.length > 1) {
-        $(previousImages[0]).remove()
+      var previousImageLinks = $(".gs-image")
+      if (previousImageLinks.length > 1) {
+        $(previousImageLinks[0]).remove()
         remove_navigation_links()
       }
 
@@ -128,7 +128,7 @@
     // determine the index of the link clicked to allow us
     // to know whether to show/hide the previous or next link
     var showPrevious = imageIndex != 0
-    var showNext = imageIndex != (Images.length - 1)
+    var showNext = imageIndex != (ImageLinks.length - 1)
 
     
     // bind the previous and next links if they are to be shown
