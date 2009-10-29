@@ -64,6 +64,10 @@
    * and binds all the necessary events
    */
   function load_image(imageIndex) {
+    // user is pressing <-/-> or p/n at image bounds
+    if (imageIndex < 0 || imageIndex > ImageLinks.length - 1)
+      return
+
     //locals
     var image = new Image()
    
