@@ -72,20 +72,28 @@
     $(image).load(function() { 
       var imgHeight, topOffset
       var content = $("#gs-image-zoom-content")
-      
+
+      // dimension calculations before adding the new one
       content.append($(image)) 
 
       // expand the content area to the height of the photo
       imgHeight = $(image).outerHeight()
-      topOffset = ($(window).height() - imgHeight) / 2
+      topOffset = ($(window).height() - imgHeight) / 2 - 10
     
+      // adjust offset for any user scrolling
+      topOffset += $(window).scrollTop()
+
       // remove any previous animations
       var previousImageLinks = $(".gs-image")
       if (previousImageLinks.length > 1) {
         $(previousImageLinks[0]).remove()
         remove_navigation_links()
       }
+     
+      // ensure the background covers the entire document (not just the visible portion)
+      $("#gs-image-zoom-bg").height($(document).height())
 
+      // show the image
       content.animate({height:imgHeight, top:topOffset}, 500, function() {
         $(image).fadeIn()
         attach_navigation_links($(image), imageIndex) 
@@ -121,7 +129,9 @@
     $("body").append(content)
     $("body").append("<div id='gs-image-zoom-bg'>")
 
-    var yOffset = ($(window).height() - parseInt(content.css("height"))) / 2
+    // offset for the window, starting height and scrollOffset
+    var yOffset = (($(window).height() - parseInt(content.css("height"))) / 2) + $(window).scrollTop()
+
     content.css("top", yOffset)
   }
 
