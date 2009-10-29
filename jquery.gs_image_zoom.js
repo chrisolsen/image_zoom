@@ -35,7 +35,7 @@
   }
 
   /**
-   * Finds the index of the image.  Index are used since it
+    * Finds the index of the image.  Index are used since it
    * allows for later checking to whether the image is first
    * or last in the list to allow for the hiding of the 
    * corresponding previous or next link.
@@ -47,14 +47,6 @@
         foundIndex = index
     })
     return foundIndex;
-  }
-
-  /**
-   * Retrieves the url for the link of the index passed in 
-   * based on the array of links within the selector 
-   */
-  function find_url_for_image_by_index(imageIndex) {
-    return ImageLinks[imageIndex].href
   }
 
   /**
@@ -109,7 +101,7 @@
     })
 
     // will make request for img data
-    image.src = find_url_for_image_by_index(imageIndex)
+    image.src = ImageLinks[imageIndex].href
 
     // save the index change
     ImageIndex = imageIndex
