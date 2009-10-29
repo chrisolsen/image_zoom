@@ -20,19 +20,17 @@
   }
   
   $.fn.gsImageZoom = function() {
-    return this.each(function(index) {
+    return this.each(function() {
       // save a list of the images allowing for the zoom 
       ImageLinks[ImageLinks.length] = this
       
       $(this).click(function() {
         ImageIndex = find_current_index_for_image(this)
         load_image(ImageIndex)
-        
+        bind_events()
+
         return false
       })
-
-      if (index == 0)
-        bind_events()
     })
   }
 
