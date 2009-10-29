@@ -9,18 +9,30 @@
 (function($) {
   var NextPrevDisplayTimeoutId
   var ImageLinks = []
+  var ImageIndex = 0
+
+  var CHAR_CODES = {
+    esc: 27,
+    left_arrow: 37,
+    right_arrow: 39,
+    n: 78,
+    p: 80
+  }
   
   $.fn.gsImageZoom = function() {
-    return this.each(function() {
+    return this.each(function(index) {
       // save a list of the images allowing for the zoom 
       ImageLinks[ImageLinks.length] = this
       
       $(this).click(function() {
-        var currentImageIndex = find_current_index_for_image(this)
-        load_image(currentImageIndex)
+        ImageIndex = find_current_index_for_image(this)
+        load_image(ImageIndex)
         
         return false
       })
+
+      if (index == 0)
+        bind_events()
     })
   }
 
@@ -43,8 +55,8 @@
    * Retrieves the url for the link of the index passed in 
    * based on the array of links within the selector 
    */
-  function find_url_for_image_by_index(index) {
-    return ImageLinks[index].href
+  function find_url_for_image_by_index(imageIndex) {
+    return ImageLinks[imageIndex].href
   }
 
   /**
@@ -83,8 +95,8 @@
       content.animate({height:imgHeight, top:topOffset}, 500, function() {
         $(image).fadeIn()
         attach_navigation_links($(image), imageIndex) 
-        bind_closing_triggers()
       })
+
     }).mouseover(function() {
       clearInterval(NextPrevDisplayTimeoutId)
       $("#gs-image-zoom-previous, #gs-image-zoom-next").fadeIn()
@@ -95,7 +107,10 @@
     })
 
     // will make request for img data
-    image.src = find_url_for_image_by_index(imageIndex) 
+    image.src = find_url_for_image_by_index(imageIndex)
+
+    // save the index change
+    ImageIndex = imageIndex
   }
 
   /**
@@ -138,6 +153,7 @@
         load_image(imageIndex - 1)
         return false
       })
+
       $("#gs-image-zoom-content").append(previousLink)
       previousLink.css({top:height/2, left:leftBoundry})
     }
@@ -148,6 +164,7 @@
         load_image(imageIndex + 1)
         return false
       })
+
       $("#gs-image-zoom-content").append(nextLink)
       nextLink.css({top:height/2, left:rightBoundry - nextLink.width()})
     }
@@ -166,18 +183,31 @@
    * Attaches all the user events that will allow for the slideshow
    * to be removed from the screen and the dom
    */
-  function bind_closing_triggers() {
+  function bind_events() {
     var close = function() {
       $("#gs-image-zoom-content, #gs-image-zoom-bg").fadeOut(300, function() {
         $(this).remove()
       })
     }
    
-    // esc key
-    $(window).one("keydown", function(e) {
+    $(window).keydown(function(e) {
       var key = e.charCode || e.keyCode || e.which
-      if (key == "27")
+      var handled = false
+      
+      if (key == CHAR_CODES.esc) {
         close()
+        handled = true
+      }
+      else if (key == CHAR_CODES.p || key == CHAR_CODES.left_arrow) {
+        load_image(ImageIndex - 1)
+        handled = true
+      }
+      else if (key == CHAR_CODES.n || key == CHAR_CODES.right_arrow) {
+        load_image(ImageIndex + 1)
+        handled = true
+      }
+
+      return !handled
     })
 
     // clicking on area outside content layer
@@ -185,4 +215,8 @@
     $("#gs-image-zoom-bg, #close").one("click", close)
   }
 
- })(jQuery);
+  function unbind_events() {
+    $(window).unbind("keydown", key_press)
+  }
+
+})(jQuery);
