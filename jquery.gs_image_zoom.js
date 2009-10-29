@@ -184,13 +184,9 @@
    * to be removed from the screen and the dom
    */
   function bind_events() {
-    var close = function() {
-      $("#gs-image-zoom-content, #gs-image-zoom-bg").fadeOut(300, function() {
-        $(this).remove()
-      })
-    }
-   
-    $(window).keydown(function(e) {
+    // named function to keypress to allow for
+    // later specific removal
+    var key_press = function(e) {
       var key = e.charCode || e.keyCode || e.which
       var handled = false
       
@@ -208,15 +204,21 @@
       }
 
       return !handled
-    })
+    }
+
+    var close = function() {
+      $("#gs-image-zoom-content, #gs-image-zoom-bg").fadeOut(300, function() {
+        $(this).remove()
+      })
+   
+      $(window).unbind("keydown", key_press)
+    }
+  
+    $(window).keydown(key_press)
 
     // clicking on area outside content layer
     // or the close button
     $("#gs-image-zoom-bg, #close").one("click", close)
-  }
-
-  function unbind_events() {
-    $(window).unbind("keydown", key_press)
   }
 
 })(jQuery);
