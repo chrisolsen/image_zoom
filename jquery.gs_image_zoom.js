@@ -17,7 +17,14 @@
     p: 80
   }
   
-  $.fn.gsImageZoom = function() {
+  $.fn.gsImageZoom = function(params) {
+    
+    var defaultParams = {
+      filter: "a"
+    }
+
+    params = $.extend(defaultParams, params)
+
     return this.each(function() {
       var zoomItems = {
         links: [],
@@ -25,8 +32,8 @@
         currentLink: function() { return this.links[this.currentIndex]; },
         addLink: function(link) { this.links[this.links.length] = link; }
       }
-
-      $(this).find("a").each(function() {
+      
+      $(this).find(params.filter).each(function() {
         // save a list of the images allowing for the zoom 
         zoomItems.addLink(this)
         
