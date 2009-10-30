@@ -8,8 +8,6 @@
 
 (function($) {
   var NextPrevDisplayTimeoutId
-  var ImageLinks = []
-  var ImageIndex = 0
 
   var CHAR_CODES = {
     esc: 27,
@@ -21,29 +19,38 @@
   
   $.fn.gsImageZoom = function() {
     return this.each(function() {
-      // save a list of the images allowing for the zoom 
-      ImageLinks[ImageLinks.length] = this
-      
-      $(this).click(function() {
-        ImageIndex = find_current_index_for_image(this)
-        load_image(ImageIndex)
-        bind_events()
+      var zoomItems = {
+        links: [],
+        currentIndex: 0,
+        currentLink: function() { return this.links[this.currentIndex]; },
+        addLink: function(link) { this.links[this.links.length] = link; }
+      }
 
-        return false
-      })
-    })
+      $(this).find("a").each(function() {
+        // save a list of the images allowing for the zoom 
+        zoomItems.addLink(this)
+        
+        $(this).click(function() {
+          zoomItems.currentIndex = find_current_index_for_image(this, zoomItems.links)
+          load_image(zoomItems, zoomItems.currentIndex)
+          bind_events(zoomItems)
+
+          return false
+        })
+      }) // link binding
+    }) // gsImageZoom()
   }
 
   /**
-    * Finds the index of the image.  Index are used since it
+   * Finds the index of the image.  Index are used since it
    * allows for later checking to whether the image is first
    * or last in the list to allow for the hiding of the 
    * corresponding previous or next link.
    */
-  function find_current_index_for_image(link) {
+  function find_current_index_for_image(link, zoomItemLinks) {
     var foundIndex = -1
-    $.each(ImageLinks, function(index) {
-      if (ImageLinks[index].href == link.href)
+    $.each(zoomItemLinks, function(index) {
+      if (this.href == link.href)
         foundIndex = index
     })
     return foundIndex;
@@ -53,9 +60,9 @@
    * Loads the image to be viewed by index into the page
    * and binds all the necessary events
    */
-  function load_image(imageIndex) {
+  function load_image(zoomItems, loadIndex) {
     // user is pressing <-/-> or p/n at image bounds
-    if (imageIndex < 0 || imageIndex > ImageLinks.length - 1)
+    if (loadIndex < 0 || loadIndex > zoomItems.links.length - 1)
       return
 
     //locals
@@ -96,7 +103,7 @@
       // show the image
       content.animate({height:imgHeight, top:topOffset}, 500, function() {
         $(image).fadeIn()
-        attach_navigation_links($(image), imageIndex) 
+        attach_navigation_links($(image), zoomItems) 
       })
 
     }).mouseover(function() {
@@ -109,10 +116,10 @@
     })
 
     // will make request for img data
-    image.src = ImageLinks[imageIndex].href
+    image.src = zoomItems.links[loadIndex].href
 
     // save the index change
-    ImageIndex = imageIndex
+    zoomItems.currentIndex = loadIndex 
   }
 
   /**
@@ -139,22 +146,22 @@
    * Adds the previous and next links to the image
    * to allow the user to navigate between all the images
    */
-  function attach_navigation_links(image, imageIndex) {
+  function attach_navigation_links(image, zoomItems) {
     var height = image.height()
     var leftBoundry = image.position().left
     var rightBoundry = leftBoundry + image.width()
 
     // determine the index of the link clicked to allow us
     // to know whether to show/hide the previous or next link
-    var showPrevious = imageIndex != 0
-    var showNext = imageIndex != (ImageLinks.length - 1)
+    var showPrevious = zoomItems.currentIndex != 0
+    var showNext = zoomItems.currentIndex != (zoomItems.links.length - 1)
 
     
     // bind the previous and next links if they are to be shown
     if (showPrevious) {
       var previousLink = $("<a id='gs-image-zoom-previous'>Prev</a>")
       previousLink.click(function() {
-        load_image(imageIndex - 1)
+        load_image(zoomItems, zoomItems.currentIndex - 1)
         return false
       })
 
@@ -165,7 +172,7 @@
     if (showNext) {
       var nextLink = $("<a id='gs-image-zoom-next'>Next</a>")
       nextLink.click(function() {
-        load_image(imageIndex + 1)
+        load_image(zoomItems, zoomItems.currentIndex + 1)
         return false
       })
 
@@ -187,7 +194,7 @@
    * Attaches all the user events that will allow for the slideshow
    * to be removed from the screen and the dom
    */
-  function bind_events() {
+  function bind_events(zoomItems) {
     // named function to keypress to allow for
     // later specific removal
     var key_press = function(e) {
@@ -199,11 +206,11 @@
         handled = true
       }
       else if (key == CHAR_CODES.p || key == CHAR_CODES.left_arrow) {
-        load_image(ImageIndex - 1)
+        load_image(zoomItems, zoomItems.currentIndex - 1)
         handled = true
       }
       else if (key == CHAR_CODES.n || key == CHAR_CODES.right_arrow) {
-        load_image(ImageIndex + 1)
+        load_image(zoomItems, zoomItems.currentIndex + 1)
         handled = true
       }
 
