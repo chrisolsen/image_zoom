@@ -6,21 +6,23 @@
   <script type="text/javascript" src="../jquery.gs_image_zoom.js"></script>
   <script type="text/javascript">
     $(document).ready(function() {
-      $("a.image-zoom").gsImageZoom()
+      $("#images").gsImageZoom()
     })
   </script>
   <body>
-    <a class="image-zoom" href="large.jpg">
-      <img src="medium.jpg" />
-    </a>
-    <a class="image-zoom" href="medium.jpg">
-      <img src="small.jpg" />
-    </a>
-    <a class="image-zoom" href="large.jpg?1">
-      <img src="medium.jpg?1" />
-    </a>
-    <a class="image-zoom" href="medium.jpg?1">
-      <img src="small.jpg?1" />
-    </a>
+    <div id="images">
+      <a href="large.jpg">
+        <img src="medium.jpg" />
+      </a>
+      <a href="medium.jpg">
+        <img src="small.jpg" />
+      </a>
+      <a href="large.jpg?1">
+        <img src="medium.jpg?1" />
+      </a>
+      <a href="medium.jpg?1">
+        <img src="small.jpg?1" />
+      </a>
+    </div>
   </body>
 </html>

@@ -166,7 +166,7 @@
     
     // bind the previous and next links if they are to be shown
     if (showPrevious) {
-      var previousLink = $("<a id='gs-image-zoom-previous'>Prev</a>")
+      var previousLink = $("<a id='gs-image-zoom-previous' title='Previous (&larr; or P)'>Prev</a>")
       previousLink.click(function() {
         load_image(zoomItems, zoomItems.currentIndex - 1)
         return false
@@ -177,7 +177,7 @@
     }
 
     if (showNext) {
-      var nextLink = $("<a id='gs-image-zoom-next'>Next</a>")
+      var nextLink = $("<a id='gs-image-zoom-next' title='Next (&rarr; or N)'>Next</a>")
       nextLink.click(function() {
         load_image(zoomItems, zoomItems.currentIndex + 1)
         return false
@@ -206,22 +206,21 @@
     // later specific removal
     var key_press = function(e) {
       var key = e.charCode || e.keyCode || e.which
-      var handled = false
       
       if (key == CHAR_CODES.esc) {
         close()
-        handled = true
+        return false
       }
       else if (key == CHAR_CODES.p || key == CHAR_CODES.left_arrow) {
         load_image(zoomItems, zoomItems.currentIndex - 1)
-        handled = true
+        return false
       }
       else if (key == CHAR_CODES.n || key == CHAR_CODES.right_arrow) {
         load_image(zoomItems, zoomItems.currentIndex + 1)
-        handled = true
+        return false
       }
 
-      return !handled
+      return true
     }
 
     var close = function() {
@@ -229,10 +228,10 @@
         $(this).remove()
       })
    
-      $(window).unbind("keydown", key_press)
+      $(document).unbind("keydown", key_press)
     }
   
-    $(window).keydown(key_press)
+    $(document).keydown(key_press)
 
     // clicking on area outside content layer
     // or the close button
